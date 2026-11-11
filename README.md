@@ -1,181 +1,173 @@
+# Automated E-Commerce Sales & Product Analytics Pipeline
 
-@'
-# Automated E-Commerce Sales and Product Analytics Pipeline
+An end-to-end data analytics automation project built using **Python, Pandas, SQLite and SQL**. The project automates the extraction, transformation, validation and storage of historical e-commerce data, creating a structured foundation for business intelligence reporting.
 
-An end-to-end data engineering and analytics project that automates the extraction, transformation, validation and storage of e-commerce sales data using Python, Pandas, SQLite and GitHub Actions.
+It demonstrates practical skills in ETL development, data quality validation, relational database design, SQL analysis and pipeline orchestration.
 
-## Business Objective
+## Project Overview
 
-Analyse historical e-commerce sales and product performance to understand:
+The objective is to analyse historical e-commerce transactions and generate insights into sales performance and product category performance.
 
-- Sales revenue and order volumes
-- Monthly sales trends
-- Average order value
-- Product category performance
-- Items sold and freight charges
+### Key Business Questions
 
-## Data Source
-
-[Olist Brazilian E-Commerce Public Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
-
-The project uses four source files:
-
-- Orders
-- Order items
-- Products
-- Product category translations
-
-The dataset contains historical transactions from 2016–2018. It is not a live data feed.
+- How much revenue does the business generate?
+- How do sales and order volumes change over time?
+- What is the average order value?
+- Which product categories generate the highest revenue?
+- How many items are sold, and what are the associated freight charges?
 
 ## Technology Stack
 
-- Python
-- Pandas
-- Kaggle API
-- SQLite
-- SQL
-- Git and GitHub
-- GitHub Actions
-- Power BI (planned reporting layer)
+| Technology | Purpose |
+|---|---|
+| Python | ETL development and pipeline orchestration |
+| Pandas | Data cleaning and transformation |
+| Kaggle API | Automated dataset extraction |
+| SQLite | Relational database storage |
+| SQL | Data validation and business analysis |
+| Git & GitHub | Version control and project management |
+| GitHub Actions | Workflow automation (planned) |
+| Power BI | Business intelligence reporting (planned) |
 
 ## Pipeline Architecture
 
-Kaggle API
-    |
-    v
-Data Extraction
-    |
-    v
-Data Transformation and Quality Checks
-    |
-    v
-SQLite Database
-    |
-    v
-SQL Analysis and Validation
-    |
-    v
-Power BI Dashboard (planned)
+The pipeline executes four main stages in sequence. GitHub Actions will provide automated execution once configured.
 
-## Data Model
+```mermaid
+flowchart TD
+    A["Kaggle Dataset"] --> B["Data Extraction"]
+    B --> C["Data Transformation"]
+    C --> D["Data Quality Checks"]
+    D --> E["SQLite Database"]
+    E --> F["SQL Business Analysis"]
+    F --> G["Power BI Dashboard (Planned)"]
 
-The SQLite database contains three tables:
+    H["GitHub Actions (Planned)"] -.-> I["data_pipeline.py"]
+    I --> B
+```
 
-| Table | Description |
+## Data Source
+
+**Olist Brazilian E-Commerce Public Dataset**
+
+Source: [Kaggle – Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+
+The dataset contains historical Brazilian e-commerce transactions from 2016 to 2018. It does not represent live transactions.
+
+### Source Files Used
+
+| Source File | Purpose |
 |---|---|
-| DimOrders | Order details, status and purchase timestamp |
-| DimProducts | Product identifiers and English categories |
-| FactOrderItems | Order items, product references, prices and freight |
+| `olist_orders_dataset.csv` | Order identifiers, statuses and purchase timestamps |
+| `olist_order_items_dataset.csv` | Product items, prices and freight values |
+| `olist_products_dataset.csv` | Product identifiers and category names |
+| `product_category_name_translation.csv` | Portuguese-to-English category translation |
 
-The fact table has relationships to both dimension tables through order_id and product_id.
+## ETL Process
 
-## Key Business Metrics
+### 1. Extract
 
-The analysis currently calculates:
+- Connect to the Kaggle dataset using the Kaggle API.
+- Download and extract the source files programmatically.
+- Verify that all required source files are available.
+- Skip unnecessary downloads when the required local files already exist.
 
-- Delivered orders
-- Items sold
-- Item revenue
-- Freight value
-- Average order value
-- Monthly delivered revenue
-- Revenue by product category
+### 2. Transform
 
-Item revenue is calculated from the order item price. Freight charges are reported separately.
+- Select the columns required for sales and product analysis.
+- Convert purchase timestamps into datetime values.
+- Convert price and freight columns into numeric data types.
+- Translate product categories into English.
+- Assign `Unknown` to missing category translations.
+- Preserve original source files and save transformed data separately.
 
-The main sales KPIs use delivered orders. Other order statuses are retained in the database for analysis.
+### 3. Load
 
-All monetary amounts are in Brazilian reais (BRL).
+Load the transformed datasets into SQLite using a relational data model.
+
+| Database Table | Description |
+|---|---|
+| `DimOrders` | Order details, status and purchase timestamp |
+| `DimProducts` | Product identifiers and English category names |
+| `FactOrderItems` | Order items, product references, prices and freight values |
+
+The fact table connects to both dimension tables through `order_id` and `product_id`.
+
+### 4. Validate
+
+The pipeline performs data quality and database integrity checks, including:
+
+- Missing or invalid timestamps.
+- Missing or invalid prices and freight values.
+- Duplicate dimension keys and missing key fields.
+- Unmatched order and product references.
+- SQLite foreign-key integrity checks.
+
+## SQL Analysis & Business Findings
+
+The SQLite database is queried to calculate sales performance and product category metrics.
+
+### Key Performance Indicators
+
+| KPI | Result |
+|---|---:|
+| Delivered orders | 96,478 |
+| Items sold | 110,197 |
+| Item revenue | R$13,221,498.11 |
+| Freight value | R$2,198,275.64 |
+| Average order value (AOV) | R$137.04 |
+
+**Calculation definitions:**
+
+- Item revenue = Sum of order item prices.
+- Freight value = Sum of freight charges.
+- Items sold = Number of order-item records.
+- AOV = Item revenue divided by distinct delivered orders.
+
+Figures are based on delivered orders. Item revenue excludes freight. All monetary amounts are in Brazilian reais (BRL).
+
+### Initial Business Insights
+
+1. **Top-performing category:** Health & Beauty generated approximately R$1.23 million in item revenue.
+2. **Second-highest category:** Watches & Gifts generated approximately R$1.17 million.
+3. **Third-highest category:** Bed, Bath & Table generated approximately R$1.02 million.
+4. **Monthly peak:** November 2017 recorded the highest delivered order volume, with 7,289 orders and approximately R$988,000 in item revenue.
+
+These findings provide a foundation for further sales and product performance analysis.
 
 ## Project Structure
 
+```text
 ecommerce-automation/
-|
-|-- data/
-|   |-- raw/                 # Downloaded source data (not committed)
-|   |-- processed/           # Transformed data and SQLite database (not committed)
-|
-|-- scripts/
-|   |-- extract_data.py
-|   |-- transform_data.py
-|   |-- load_database.py
-|   |-- validate_database.py
-|
-|-- .github/
-|   |-- workflows/           # GitHub Actions workflows (to be added)
-|
-|-- data_pipeline.py
-|-- requirements.txt
-|-- .gitignore
-|-- README.md
+│
+├── data/
+│   ├── raw/                       # Downloaded source CSV files (not committed)
+│   └── processed/                 # Cleaned CSV files and SQLite database (not committed)
+│
+├── scripts/
+│   ├── extract_data.py            # Kaggle data extraction
+│   ├── transform_data.py          # Data cleaning and transformation
+│   ├── load_database.py           # SQLite database loading
+│   └── validate_database.py       # SQL validation and analysis
+│
+├── .github/
+│   └── workflows/                 # GitHub Actions workflows (planned)
+│
+├── data_pipeline.py               # Main pipeline orchestrator
+├── requirements.txt               # Python dependencies
+├── .gitignore                     # Excludes data, credentials and environments
+└── README.md                      # Project documentation
+```
 
 ## Running the Pipeline Locally
 
+### Prerequisites
+
+- Python
+- Git
+- Kaggle account and API access
+
 ### 1. Clone the repository
 
-    git clone <your-repository-url>
-    cd ecommerce-automation
-
-### 2. Create and activate a virtual environment
-
-    python -m venv venv
-
-Windows PowerShell:
-
-    .\venv\Scripts\Activate.ps1
-
-### 3. Install dependencies
-
-    pip install -r requirements.txt
-
-### 4. Configure Kaggle API authentication
-
-Configure Kaggle API credentials securely on your local machine.
-
-Do not commit API tokens or credential files to GitHub.
-
-### 5. Run the complete pipeline
-
-    python data_pipeline.py
-
-The pipeline executes extraction, transformation, database loading and SQL validation in sequence.
-
-## Automation
-
-GitHub Actions automation will be configured to support manual and scheduled execution.
-
-Kaggle credentials will be stored using GitHub repository secrets rather than hardcoded in the source code.
-
-## Data Quality
-
-The pipeline includes checks for:
-
-- Missing and invalid timestamps
-- Missing or invalid prices and freight values
-- Duplicate dimension keys
-- Missing key fields
-- Unmatched order and product references
-- Database foreign-key integrity
-
-Products without an available English category translation are retained under the category "Unknown".
-
-## Current Project Status
-
-- [x] Kaggle data extraction script
-- [x] Data transformation
-- [x] Data quality checks
-- [x] SQLite database creation
-- [x] SQL validation and business analysis
-- [x] End-to-end local pipeline orchestration
-- [ ] GitHub Actions automation
-- [ ] Power BI dashboard
-- [ ] Final project documentation
-
-## Dataset Licence and Attribution
-
-The Olist dataset is distributed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International licence (CC BY-NC-SA 4.0). Refer to the Kaggle dataset page and its licence terms before redistributing or using the data.
-
-This project is intended for learning and portfolio demonstration.
-
----
-'@ | Set-Content -Path README.md -Encoding UTF8
+```bash
+git clone https://github.com/om
