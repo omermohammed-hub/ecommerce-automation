@@ -1,0 +1,30 @@
+﻿# Python virtual environments
+venv/
+.venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Downloaded and processed data
+data/raw/
+data/processed/
+
+# Sensitive credentials and configuration
+API.txt
+.kaggle/
+.env
+*.token
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Previous exploratory scripts
+clean_geolocation.py
+clean_orders.py
+clean_reviews.py
+functions.py
+investigate_*.py
