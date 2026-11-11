@@ -170,4 +170,78 @@ ecommerce-automation/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/om
+git clone https://github.com/omermohammed-hub/ecommerce-automation.git
+cd ecommerce-automation
+```
+
+### 2. Create and activate a virtual environment
+
+**Windows PowerShell:**
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+**macOS/Linux:**
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure Kaggle authentication
+
+Configure the Kaggle API credentials required by the Kaggle CLI on your local machine.
+
+Never commit API tokens, credential files or private configuration to the repository.
+
+### 5. Execute the complete pipeline
+
+```bash
+python data_pipeline.py
+```
+
+The main script executes all four stages in sequence:
+
+1. Extract source data.
+2. Transform and validate datasets.
+3. Load the data into SQLite.
+4. Execute SQL validation and business analysis.
+
+If a stage fails, the pipeline stops and reports the error.
+
+## Project Progress
+
+### Completed
+
+- [x] Kaggle data extraction script.
+- [x] Data transformation using Pandas.
+- [x] Data quality validation.
+- [x] SQLite database creation.
+- [x] Relational data model design.
+- [x] SQL business analysis.
+- [x] End-to-end local pipeline orchestration.
+- [x] Initial Git repository and project documentation.
+
+### Planned
+
+- [ ] GitHub Actions automation.
+- [ ] Secure Kaggle authentication through GitHub Secrets.
+- [ ] Scheduled and manual workflow execution.
+- [ ] Power BI dashboard integration.
+- [ ] Final project documentation and presentation.
+
+## Dataset Attribution & Licence
+
+The Olist dataset is distributed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)** licence.
+
+Refer to the [original Kaggle dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) for full attribution and licence conditions.
+
+This project is developed for educational and portfolio demonstration purposes.
